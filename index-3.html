@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0c1528">
+  <title>CyberQuest | Interactive Cybersecurity Crossword</title>
+  <style>
+:root{--bg:#09111f;--card:#111e30;--card2:#152439;--border:#263b52;--ink:#eef8ff;--muted:#91a6be;--accent:#4be5c3;--accent2:#55b7ff;--yellow:#ffd486;--red:#ff7585;--size:31px}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}button,input{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.ambient{position:fixed;z-index:-1;width:500px;height:500px;filter:blur(95px);opacity:.14;pointer-events:none;border-radius:50%}.ambient-1{background:#248dc1;top:-310px;left:-180px}.ambient-2{background:#49dbaa;top:200px;right:-350px}.page{max-width:1420px;margin:0 auto;padding:0 28px}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:15px;border-bottom:1px solid #1e3149;min-height:76px}.brand{font-weight:900;color:var(--ink);letter-spacing:1.5px;text-decoration:none;display:inline-flex;align-items:center;gap:12px;font-size:19px}.brand-icon{display:grid;place-items:center;background:#183d47;border:1px solid #377a7e;border-radius:12px;width:37px;height:37px;color:var(--accent);font-size:24px}.brand-accent,.intro h1 span{color:var(--accent)}.header-tag,.challenge-tag{color:#a9e9d9;background:#132b35;border:1px solid #285158;border-radius:99px;padding:8px 13px;font-size:10px;letter-spacing:1.7px;font-weight:800}.status-dot{display:inline-block;width:7px;height:7px;background:var(--accent);border-radius:50%;margin-right:8px;box-shadow:0 0 9px var(--accent)}
+.intro{display:flex;justify-content:space-between;align-items:center;gap:24px;margin:32px 0 27px}.eyebrow{font-size:11px;font-weight:800;letter-spacing:2.3px;color:#60cbbd}.intro h1{font-size:clamp(28px,3.7vw,48px);letter-spacing:-1.9px;line-height:1.15;margin:11px 0 10px}.intro p{margin:0;color:var(--muted);font-size:15px}.challenge-tag{min-width:105px;text-align:center;border-radius:14px;padding:12px 16px;color:var(--accent)}.challenge-tag b{display:block;font-size:31px;line-height:1.2;color:var(--ink)}.challenge-tag small{display:block;font-size:8px;letter-spacing:1.3px;color:var(--muted)}
+.dashboard{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-bottom:22px}.stat{background:#111f31;border:1px solid var(--border);border-radius:15px;padding:15px 18px;min-width:0}.stat-label{display:block;color:var(--muted);font-size:10px;letter-spacing:1.25px;font-weight:800}.stat-value{display:block;margin-top:5px;font-size:27px;letter-spacing:-1px;font-variant-numeric:tabular-nums}.stat-value strong{font-weight:800}.stat-muted{color:var(--muted);font-size:14px;font-weight:500}.progress-track{height:6px;margin-top:8px;background:#26384b;border-radius:9px;overflow:hidden}.progress-fill{width:0;height:100%;background:linear-gradient(90deg,var(--accent2),var(--accent));border-radius:9px;transition:width .2s}
+.game-layout{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(300px,1fr);gap:18px;align-items:start}.puzzle-panel,.clues-panel{background:linear-gradient(135deg,#111f32,#101b2a);border:1px solid var(--border);border-radius:20px;padding:20px;min-width:0}.panel-head{display:flex;align-items:center;justify-content:space-between;gap:12px}.panel-head h2{font-size:21px;margin:2px 0 0;letter-spacing:-.4px}.legend{display:flex;align-items:center;gap:7px;color:var(--muted);font-size:11px;white-space:nowrap}.legend-active,.legend-correct{width:9px;height:9px;background:var(--accent2);border-radius:3px;display:inline-block;margin-left:8px}.legend-correct{background:var(--accent)}.helper{font-size:12px;color:var(--muted);margin:11px 0 16px}.grid-scroll{max-width:100%;overflow:auto;scrollbar-color:#37526c transparent;border-radius:10px;background:#0b1525;padding:14px;max-height:830px}.crossword-grid{display:grid;grid-template-columns:repeat(var(--columns),var(--size));grid-template-rows:repeat(var(--rows),var(--size));gap:2px;width:max-content;margin:auto}.cell{width:var(--size);height:var(--size);position:relative}.cell.block{background:transparent}.cell input{width:100%;height:100%;border:1px solid #3f5b76;border-radius:4px;padding:3px 0 0;text-align:center;background:#f0f7fb;color:#123046;text-transform:uppercase;font-size:15px;font-weight:800;outline:none;caret-color:transparent;transition:background .12s,border-color .12s}.cell input:focus-visible{outline:2px solid #61bfff;outline-offset:-2px}.cell .cell-number{position:absolute;z-index:2;top:1px;left:2px;color:#30495c;font-size:8px;line-height:1;pointer-events:none;font-weight:800}.cell.part-of-selected input{background:#b9e7ed;border-color:#77b8d8}.cell.cursor input{background:#75caff;border-color:#208aff;color:#062440}.cell.correct input{background:#b5f6de;border-color:#4abf9f}.cell.incorrect input{background:#ffbcc5;border-color:#f57788}.cell.hinted input{box-shadow:inset 0 -3px #dbac3d}.cell.correct.cursor input{background:#7be5c1}.cell.incorrect.cursor input{background:#ff96a7}
+.selected-panel{margin-top:17px;border:1px solid #284858;border-radius:13px;background:#112a39;padding:14px 16px}.selected-top{display:flex;justify-content:space-between;gap:10px;align-items:center}.selected-index{font-size:11px;font-weight:900;color:var(--accent);letter-spacing:1.1px}.selected-length{color:var(--muted);font-size:11px}.selected-panel p{margin:8px 0 13px;min-height:24px;font-size:14px}.selected-panel label{font-size:10px;color:#9bbed0;font-weight:800;letter-spacing:1px}.selected-panel label span{letter-spacing:normal;text-transform:none;font-weight:400}.word-entry-row{display:flex;gap:9px;margin-top:6px}.word-entry-row input{width:100%;min-width:0;flex:1;border-radius:9px;background:#0b1827;border:1px solid #416179;color:#fff;padding:10px 12px;text-transform:uppercase;letter-spacing:2px}.mini-btn{border-radius:8px;border:1px solid #478377;background:#205a56;color:#d5fff3;padding:0 16px;white-space:nowrap;font-weight:750;font-size:12px}.mini-btn:hover{background:#267169}.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:17px}.btn{border-radius:9px;padding:11px 17px;font-size:13px;font-weight:800;border:1px solid transparent;transition:transform .15s,background .15s}.btn:hover,.mini-btn:hover{transform:translateY(-1px)}.btn.primary{background:var(--accent);color:#09243b}.btn.primary:hover{background:#7ef6d9}.btn.secondary{background:#19334a;border-color:#315771;color:#bce8ff}.btn.secondary:hover{background:#244863}.btn.ghost{background:transparent;border-color:#35495f;color:#a1b6c8}.feedback{font-size:12px;color:#afc9de;min-height:19px;margin:13px 0 0}.feedback.error{color:#ff9dac}.feedback.success{color:#79ecc7}
+.clue-count{border:1px solid #2d4c5b;border-radius:20px;padding:5px 10px;font-size:10px;letter-spacing:1px;color:#7fbbbc;font-weight:800}.tab-row{display:flex;gap:8px;margin:21px 0 16px;border-bottom:1px solid #314459}.tab{flex:1;background:transparent;border:none;border-bottom:2px solid transparent;padding:12px;color:var(--muted);font-weight:800}.tab.active{border-color:var(--accent);color:var(--accent)}.tab span{background:#24364b;border-radius:9px;padding:2px 6px;margin-left:4px;color:#a8c2d5;font-size:11px}.clue-list{display:flex;flex-direction:column;gap:8px;max-height:744px;overflow:auto;scrollbar-color:#34506a transparent;padding-right:4px}.clue-btn{display:flex;text-align:left;align-items:flex-start;gap:10px;background:#17283e;border:1px solid #293b52;border-radius:10px;width:100%;padding:12px;color:#daeaf4;font-size:13px;line-height:1.4}.clue-btn:hover{border-color:#5687a0;background:#1d344d}.clue-btn.selected{background:#193f4c;border-color:#45bdad}.clue-btn.solved{border-color:#31775f}.clue-no{font-weight:900;color:var(--accent);font-size:12px;min-width:22px}.clue-content{flex:1}.clue-status{color:var(--accent);font-size:17px;line-height:1}.clue-length{display:inline-block;color:#7e9db5;margin-top:6px;font-size:11px}.tip{display:flex;gap:12px;background:#132838;border:1px solid #25495a;margin-top:22px;border-radius:12px;padding:15px;color:#a5c4d5}.tip-icon{width:22px;height:22px;flex:none;border:1px solid #527b89;border-radius:50%;text-align:center;color:var(--accent);font-weight:800}.tip strong{font-size:12px;color:#a9e7e5}.tip p{font-size:12px;margin:3px 0 0}footer{display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap;padding:26px 0 35px;color:#658095;font-size:10px;letter-spacing:1px}.celebration{position:fixed;z-index:10;inset:0;display:grid;place-items:center;background:#03101cdd;padding:20px}.celebration[hidden]{display:none}.win-card{max-width:440px;width:100%;padding:32px;text-align:center;background:#132a3a;border:1px solid #4ba698;border-radius:21px;box-shadow:0 30px 90px #0008}.win-card h2{font-size:32px;margin:8px 0}.win-card p{color:#a0c4d5}.win-card .btn{margin-top:14px}.trophy{font-size:48px}
+@media(max-width:1180px){:root{--size:28px}.game-layout{grid-template-columns:minmax(0,1.4fr) minmax(290px,1fr)}.puzzle-panel,.clues-panel{padding:16px}}
+@media(max-width:850px){.game-layout{grid-template-columns:minmax(0,1fr)}.clue-list{max-height:360px}.intro h1{font-size:31px}.dashboard{grid-template-columns:repeat(2,1fr)}.legend{display:none}}
+@media(max-width:540px){:root{--size:27px}.page{padding:0 13px}.topbar{min-height:62px}.brand{font-size:16px}.header-tag{font-size:8px;padding:6px 8px;letter-spacing:.6px}.intro{margin:22px 0;align-items:flex-start}.intro h1{font-size:29px}.intro p{font-size:13px}.challenge-tag{display:none}.dashboard{gap:8px}.stat{padding:11px 12px}.stat-value{font-size:23px}.puzzle-panel,.clues-panel{border-radius:14px;padding:12px}.grid-scroll{padding:8px}.cell input{font-size:14px}.actions .btn{flex:1 0 35%;padding:10px 8px}.mini-btn{padding:0 11px}.selected-panel{padding:12px}}
+@media print{body{background:#fff;color:#000}.ambient,.topbar,.intro,.dashboard,.selected-panel,.actions,.feedback,.clues-panel,footer,.helper,.legend{display:none!important}.game-layout{display:block}.puzzle-panel{background:#fff;border:0}.grid-scroll{max-height:none;overflow:visible;background:#fff}.cell input{border:1px solid #444;color:#000;background:#fff!important}.cell.block{background:#333}.cell.block{print-color-adjust:exact}.crossword-grid{gap:0}}
+
+/* Cybersecurity lesson cards and scenario-based decision lab */
+.insight { margin-top:12px;padding:14px 16px;border:1px solid #248775;border-radius:12px;background:#102e31;color:#d3faee }
+.insight[hidden] { display:none }
+.lesson-label{display:block;color:#65edca;font-size:10px;letter-spacing:1.4px;font-weight:900}
+.insight p{font-size:13px;line-height:1.6;margin:8px 0 0}
+.insight .defense{color:#a9e4f1}
+.word-bank{margin-top:18px;border:1px solid #355069;background:#132336;border-radius:12px;padding:12px 15px;color:#b1cddd;font-size:12px}
+.word-bank summary{cursor:pointer;color:#b7edff;font-weight:750}
+.word-bank p{margin:9px 0 0;line-height:1.8}
+.course-section{margin-top:22px;background:linear-gradient(135deg,#111f32,#101b2a);border:1px solid var(--border);border-radius:20px;padding:23px}
+.course-section h2{font-size:22px;margin:3px 0 6px;line-height:1.3}
+.section-heading{display:flex;align-items:start;justify-content:space-between;gap:18px;margin-bottom:18px}
+.section-heading p,.concept-section p{color:#a6bbcc;margin:6px 0 0;font-size:13px;line-height:1.65}
+.challenge-progress{color:#65ead4;white-space:nowrap;border:1px solid #2e756e;background:#153c3c;padding:7px 12px;border-radius:30px;font-size:11px;font-weight:850;letter-spacing:.7px}
+.challenge-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:13px}
+.challenge-card{padding:16px;background:#14283b;border:1px solid #304961;border-radius:14px;min-width:0}
+.challenge-card h3{font-size:14px;line-height:1.5;margin:7px 0 12px;color:#e5f6ff}
+.challenge-card .topic{color:#5cdabd;letter-spacing:1.3px;font-size:10px;font-weight:900}
+.challenge-choice{display:block;width:100%;margin:8px 0;background:#172f46;border:1px solid #406078;border-radius:9px;padding:10px 11px;color:#dceaf6;text-align:left;line-height:1.45;font-size:12px}
+.challenge-choice:hover:not(:disabled){border-color:#62c8cf;background:#1d4454}
+.challenge-choice:disabled{cursor:default;opacity:.88}
+.challenge-choice.chosen.correct{background:#154a3e;border-color:#62cfaa;color:#b7ffe4}
+.challenge-choice.chosen.wrong{background:#502d3a;border-color:#ff8a96;color:#ffe5e8}
+.challenge-feedback{font-size:12px;line-height:1.6;margin-top:10px;color:#bed4e1}
+.challenge-feedback strong{color:#9af5d8}.challenge-feedback.error strong{color:#ffb5bd}
+.concept-section strong{color:#b6f5e5}
+.concept-section .source-note{color:#7798aa;font-size:11px;margin-top:15px}
+@media(max-width:700px){.section-heading{flex-direction:column}.course-section{padding:15px;border-radius:14px}}
+@media print{.course-section,.insight,.word-bank{display:none!important}}
+
+
+/* Completed incorrect answers are red immediately, including their intersecting squares. */
+.cell.word-wrong input,
+.cell.word-wrong.part-of-selected input,
+.cell.word-wrong.correct input,
+.cell.word-wrong.incorrect input{background:#ffc5ce;border:2px solid #ed3659;color:#75182a;box-shadow:inset 0 0 0 1px #ef5c77}
+.cell.word-wrong.cursor input,
+.cell.word-wrong.correct.cursor input{background:#ff9eae;border:2px solid #d91d43;color:#580819;box-shadow:0 0 0 2px #ff63887a}
+@keyframes wrongPulse{0%{transform:scale(1);filter:brightness(1)}32%{transform:scale(1.10);filter:brightness(1.06)}60%{transform:scale(.98)}100%{transform:scale(1)}}
+.cell.word-wrong.flash-wrong input{animation:wrongPulse .48s ease-out}
+.legend-wrong{display:inline-block;width:9px;height:9px;background:#ed3659;border-radius:3px;margin-left:8px}
+.selected-panel.invalid{border-color:#e94b68;background:#341f32;box-shadow:0 0 0 1px #9e3550aa}
+.selected-panel.valid{border-color:#4ac7a0}
+.selected-panel.invalid #word-entry{border-color:#ff7590}
+.selected-panel.invalid .mini-btn{background:#8f2748;border-color:#ef577c;color:#fff}
+.answer-status{font-size:12px;font-weight:800;letter-spacing:.1px;margin:10px 0 0;min-height:18px;color:#9bbbd0}
+.answer-status.error{color:#ff9cac}
+.answer-status.success{color:#81edc5}
+.clue-btn.wrong{border-color:#ec4667;background:#392337}
+.clue-btn.wrong .clue-no,.clue-btn.wrong .clue-status{color:#ff8ea2}
+@media(prefers-reduced-motion:reduce){.cell.word-wrong.flash-wrong input{animation:none}}
+</style>
+
+
+</head>
+<body>
+  <div class="ambient ambient-1" aria-hidden="true"></div>
+  <div class="ambient ambient-2" aria-hidden="true"></div>
+  <div class="page">
+    <header class="topbar">
+      <a class="brand" href="index.html" aria-label="CyberQuest home">
+        <span class="brand-icon" aria-hidden="true">⌘</span>
+        <span>CYBER<span class="brand-accent">QUEST</span></span>
+      </a>
+      <span class="header-tag"><span class="status-dot"></span> CYBERSECURITY CHALLENGE</span>
+    </header>
+
+    <main>
+      <section class="intro" aria-labelledby="page-title">
+        <div>
+          <div class="eyebrow">LEARN / PRACTICE / DEFEND</div>
+          <h1 id="page-title">Think like a <span>security expert.</span></h1>
+          <p>Solve the same 12 terms as the class example, now using real security incidents and defensive decisions.</p>
+        </div>
+        <div class="challenge-tag" aria-label="Class project 14">PROJECT <b>14</b><small>CROSSWORD GAME</small></div>
+      </section>
+
+      <section class="dashboard" aria-label="Game statistics">
+        <div class="stat"><span class="stat-label">WORDS SOLVED</span><span class="stat-value"><strong id="solved-count">0</strong><span class="stat-muted"> / 12</span></span></div>
+        <div class="stat"><span class="stat-label">YOUR SCORE</span><span class="stat-value"><strong id="score">0</strong><span class="stat-muted"> pts</span></span></div>
+        <div class="stat"><span class="stat-label">TIME ELAPSED</span><span class="stat-value"><strong id="timer">00:00</strong></span></div>
+        <div class="stat progress-stat"><span class="stat-label">COMPLETION</span><span class="stat-value"><strong id="progress-text">0%</strong></span><div class="progress-track"><div id="progress-fill" class="progress-fill"></div></div></div>
+      </section>
+
+      <section class="game-layout" aria-label="Crossword game">
+        <div class="puzzle-panel">
+          <div class="panel-head">
+            <div><span class="eyebrow">MISSION 01 · RECOGNIZE THREATS</span><h2>Crossword Grid</h2></div>
+            <div class="legend"><span class="legend-active"></span> Selected <span class="legend-correct"></span> Correct <span class="legend-wrong"></span> Incorrect</div>
+          </div>
+          <p class="helper">Select a clue or square to begin. A complete incorrect word turns red immediately; a correct word turns green. Click an intersection twice to switch direction.</p>
+          <div class="grid-scroll" id="grid-scroll" tabindex="-1"><div class="crossword-grid" id="crossword-grid" role="group" aria-label="Crossword letter grid"></div></div>
+          <div class="selected-panel" aria-live="polite">
+            <div class="selected-top"><span id="selected-label" class="selected-index">SELECT A CLUE</span><span id="selected-length" class="selected-length"></span></div>
+            <p id="selected-clue">Choose an Across or Down clue from the right.</p>
+            <label for="word-entry">TYPE THE SELECTED WORD <span>(great for phones)</span></label>
+            <div class="word-entry-row">
+              <input id="word-entry" autocomplete="off" spellcheck="false" autocapitalize="characters" placeholder="Enter your answer here" aria-label="Answer the selected clue">
+              <button id="apply-word" class="mini-btn">Enter word</button>
+            </div>
+            <p id="selected-status" class="answer-status" aria-live="polite">Complete the word to check it.</p>
+          </div>
+          <div class="insight" id="lesson" hidden aria-live="polite">
+            <span class="lesson-label">SECURITY KNOWLEDGE UNLOCKED</span>
+            <p id="lesson-description"></p>
+            <p class="defense" id="lesson-defense"></p>
+          </div>
+          <div class="actions">
+            <button id="check-btn" class="btn primary">✓ &nbsp; Check answers</button>
+            <button id="hint-btn" class="btn secondary">✧ &nbsp; Reveal a letter</button>
+            <button id="reset-btn" class="btn ghost">↻ &nbsp; Restart</button>
+          </div>
+          <p id="feedback" class="feedback" aria-live="polite">Ready when you are. The timer starts when you enter your first letter.</p>
+        </div>
+
+        <aside class="clues-panel" aria-label="Across and down clues">
+          <div class="panel-head"><div><span class="eyebrow">YOUR OBJECTIVES</span><h2>Clue List</h2></div><span class="clue-count" id="clue-count">12 CLUES</span></div>
+          <div class="tab-row" role="tablist" aria-label="Clue direction">
+            <button class="tab active" id="tab-across" role="tab" aria-selected="true" aria-controls="clues-content">Across <span id="across-num"></span></button>
+            <button class="tab" id="tab-down" role="tab" aria-selected="false" aria-controls="clues-content">Down <span id="down-num"></span></button>
+          </div>
+          <div id="clues-content" class="clue-list" role="tabpanel" aria-labelledby="tab-across"></div>
+          <details class="word-bank"><summary>Show the original 12-word bank (optional hint)</summary>
+            <p>Cybersecurity · Data Theft · Malvertisement · Accessing · Physical Security · Protection · Breaches · Identity Thefts · Hackers · VPNs · Phishing · Security Engineer</p>
+          </details>
+          <div class="tip"><span class="tip-icon">i</span><div><strong>How points work</strong><p>Each correctly solved word earns 100 points. Each revealed letter costs 15 points. A completed incorrect word turns red immediately. You can also use Check answers at any time.</p></div></div>
+        </aside>
+      </section>
+      <section class="course-section" aria-labelledby="course-title">
+        <div class="section-heading"><div><span class="eyebrow">MISSION 02 · APPLY DEFENSIVE ACTIONS</span><h2 id="course-title">Cybersecurity Decision Lab</h2>
+        <p>Identifying a term is only the beginning. Decide how to respond to actual security risks. Each question tests a CYS401 concept.</p></div>
+        <div class="challenge-progress" id="challenge-progress">0 / 5 CORRECT</div></div>
+        <div id="challenge-questions" class="challenge-grid"></div>
+      </section>
+      <section class="course-section concept-section" aria-labelledby="concept-title">
+        <span class="eyebrow">WHY THIS BELONGS IN A CYBERSECURITY COURSE</span>
+        <h2 id="concept-title">Theory meets security practice</h2>
+        <p>The crossword introduces threats and defenses; the decision lab asks you to choose secure behavior. Topics include <strong>social engineering, confidentiality and data theft, authentication and access control, physical safeguards, secure remote access,</strong> and <strong>incident response</strong>.</p>
+        <p class="source-note">Activity based on the 12-word bank from the assignment illustration. This independent student learning game does not copy the GitHub generator's code.</p>
+      </section>
+      <footer><span>CYBERQUEST / SECURITY KNOWLEDGE LAB</span><span>Made for learning · No sign-in needed · Works offline</span></footer>
+    </main>
+  </div>
+  <div class="celebration" id="celebration" hidden role="dialog" aria-labelledby="win-title" aria-modal="true">
+    <div class="win-card">
+      <div class="trophy">🏆</div>
+      <div class="eyebrow">MISSION ACCOMPLISHED</div>
+      <h2 id="win-title">Crossword completed!</h2>
+      <p id="win-summary"></p>
+      <button id="play-again" class="btn primary">Play again</button>
+    </div>
+  </div>
+<script>
+// CyberQuest puzzle data.
+const PUZZLE = {
+  "width": 18,
+  "height": 23,
+  "entries": [
+    {
+      "answer": "CYBERSECURITY",
+      "clue": "A company uses firewalls, security training, and access policies to defend its computers, networks, and information from digital attacks. What is the name of this field?",
+      "r": 0,
+      "c": 3,
+      "dir": "across",
+      "number": 1,
+      "lesson": "Cybersecurity combines people, processes and technologies to protect digital assets.",
+      "defense": "Course link: security principles, threats, controls and the CIA triad."
+    },
+    {
+      "answer": "IDENTITYTHEFTS",
+      "clue": "Criminals steal several people’s personal details, then impersonate them to open fraudulent accounts. What are these crimes called? (two words, plural)",
+      "r": 0,
+      "c": 13,
+      "dir": "down",
+      "number": 2,
+      "lesson": "Identity theft occurs when personal information is used to impersonate someone fraudulently.",
+      "defense": "Defend: protect personal data, verify requests and use MFA."
+    },
+    {
+      "answer": "BREACHES",
+      "clue": "Several incidents expose confidential patient records to people without permission. These incidents are called data _____. (plural)",
+      "r": 2,
+      "c": 7,
+      "dir": "across",
+      "number": 3,
+      "lesson": "A breach is a security incident involving compromised protected data or systems.",
+      "defense": "Defend: report suspected incidents quickly and follow incident-response procedures."
+    },
+    {
+      "answer": "PHYSICALSECURITY",
+      "clue": "A company protects its server room with locked doors, cameras, and employee ID badges. What type of security is this? (two words)",
+      "r": 5,
+      "c": 0,
+      "dir": "across",
+      "number": 4,
+      "lesson": "Physical controls protect buildings, devices and information from unauthorized physical access.",
+      "defense": "Defend: badge checks, locked equipment areas and visitor verification."
+    },
+    {
+      "answer": "ACCESSING",
+      "clue": "An authorized employee logs in and opens records in a company database. What action is the employee performing? (ends in -ing)",
+      "r": 5,
+      "c": 17,
+      "dir": "down",
+      "number": 5,
+      "lesson": "Access to systems must be approved, authenticated and limited to authorized resources.",
+      "defense": "Defend: use strong authentication, authorization and access logs."
+    },
+    {
+      "answer": "MALVERTISEMENT",
+      "clue": "A harmful online advertisement redirects visitors from a legitimate website to a malware download. What is this malicious advertisement called?",
+      "r": 8,
+      "c": 0,
+      "dir": "across",
+      "number": 6,
+      "lesson": "A malvertisement is a malicious online advertisement used to lead people to harmful sites or software.",
+      "defense": "Defend: maintain browser security updates and avoid unexpected ads and downloads."
+    },
+    {
+      "answer": "SECURITYENGINEER",
+      "clue": "Which cybersecurity professional designs, builds, and tests technical defenses such as firewalls and secure network configurations? (two-word job title)",
+      "r": 10,
+      "c": 0,
+      "dir": "across",
+      "number": 7,
+      "lesson": "A security engineer builds, tests and maintains safeguards in digital infrastructure.",
+      "defense": "Course link: implementing technical controls and secure system design."
+    },
+    {
+      "answer": "PHISHING",
+      "clue": "A fake message that looks like it came from university IT leads students to a counterfeit login page to steal their passwords. Which social-engineering attack is this?",
+      "r": 13,
+      "c": 10,
+      "dir": "across",
+      "number": 8,
+      "lesson": "Phishing is social engineering that tricks people into revealing information or taking unsafe actions.",
+      "defense": "Defend: inspect senders, avoid suspicious links and report unexpected credential requests."
+    },
+    {
+      "answer": "PROTECTION",
+      "clue": "Encryption, backups, and access controls all aim to keep sensitive information safe. What is this shared goal called?",
+      "r": 13,
+      "c": 10,
+      "dir": "down",
+      "number": 8,
+      "lesson": "Protection means lowering security risks through preventive and defensive controls.",
+      "defense": "Defend: combine MFA, patching, encryption, backups and awareness training."
+    },
+    {
+      "answer": "DATATHEFT",
+      "clue": "An attacker secretly copies confidential research files from a university server without permission. What crime has occurred? (two words)",
+      "r": 16,
+      "c": 8,
+      "dir": "across",
+      "number": 9,
+      "lesson": "Data theft is the unauthorized copying or taking of confidential information.",
+      "defense": "Defend: apply least privilege, monitor access and encrypt sensitive records."
+    },
+    {
+      "answer": "HACKERS",
+      "clue": "People who use technical skills to examine or exploit computer systems can act ethically or maliciously. What are they called? (plural)",
+      "r": 16,
+      "c": 13,
+      "dir": "down",
+      "number": 10,
+      "lesson": "A hacker uses technical skills to examine or access systems; ethical and malicious intentions differ.",
+      "defense": "Defend: patch vulnerabilities, apply least privilege and monitor suspicious activity."
+    },
+    {
+      "answer": "VPNS",
+      "clue": "Remote employees use encrypted network tunnels to connect securely to organizational resources over the internet. What are these technologies called? (plural acronym)",
+      "r": 22,
+      "c": 8,
+      "dir": "across",
+      "number": 11,
+      "lesson": "Virtual private networks encrypt traffic between a device and a VPN endpoint.",
+      "defense": "Defend: use trusted, institution-approved VPNs where appropriate; VPNs do not prevent phishing."
+    }
+  ]
+};
+
+(() => {
+  'use strict';
+
+  const puzzle = PUZZLE;
+  const entries = puzzle.entries.map((entry) => ({ ...entry,
+    id: `${entry.number}-${entry.dir}`,
+    cells: Array.from({ length: entry.answer.length }, (_, i) => ({
+      r: entry.r + (entry.dir === 'down' ? i : 0),
+      c: entry.c + (entry.dir === 'across' ? i : 0)
+    }))
+  }));
+  const byId = new Map(entries.map((entry) => [entry.id, entry]));
+  const cells = new Map();
+  const inputs = new Map();
+  const startNumbers = new Map();
+  const hintedCells = new Set();
+  let selected = null;
+  let activeKey = null;
+  let activeTab = 'across';
+  let hintsUsed = 0;
+  let startedAt = null;
+  let elapsedMillis = 0;
+  let timerId = null;
+  let checked = false;
+  let finished = false;
+  let previouslyWrong = new Set();
+
+  const $ = (id) => document.getElementById(id);
+  const cellKey = (r, c) => `${r},${c}`;
+  const getEntryText = (entry) => entry.cells.map(({r, c}) => cells.get(cellKey(r, c)).value).join('');
+  const isSolved = (entry) => getEntryText(entry) === entry.answer;
+  const isComplete = (entry) => entry.cells.every(({r,c}) => Boolean(cells.get(cellKey(r,c)).value));
+  const isWrong = (entry) => isComplete(entry) && !isSolved(entry);
+  const activeCellEntries = (key) => cells.get(key)?.entries || [];
+
+  entries.forEach((entry) => {
+    startNumbers.set(cellKey(entry.r, entry.c), entry.number);
+    entry.cells.forEach(({r, c}, i) => {
+      const key = cellKey(r, c);
+      if (!cells.has(key)) cells.set(key, { answer: entry.answer[i], value: '', entries: [] });
+      if (cells.get(key).answer !== entry.answer[i]) {
+        throw new Error(`Conflicting words at ${key}`);
+      }
+      cells.get(key).entries.push(entry.id);
+    });
+  });
+
+  function makeGrid() {
+    const board = $('crossword-grid');
+    board.style.setProperty('--columns', String(puzzle.width));
+    board.style.setProperty('--rows', String(puzzle.height));
+    for (let r = 0; r < puzzle.height; r++) {
+      for (let c = 0; c < puzzle.width; c++) {
+        const key = cellKey(r, c);
+        const wrapper = document.createElement('div');
+        wrapper.className = 'cell';
+        if (!cells.has(key)) {
+          wrapper.classList.add('block');
+          wrapper.setAttribute('aria-hidden', 'true');
+        } else {
+          const number = startNumbers.get(key);
+          if (number !== undefined) {
+            const label = document.createElement('span');
+            label.className = 'cell-number';
+            label.textContent = String(number);
+            wrapper.appendChild(label);
+          }
+          const input = document.createElement('input');
+          input.type = 'text';
+          input.maxLength = 1;
+          input.autocomplete = 'off';
+          input.spellcheck = false;
+          input.autocapitalize = 'characters';
+          input.setAttribute('aria-label', `Row ${r + 1} column ${c + 1}${number !== undefined ? `, clue ${number}` : ''}`);
+          input.dataset.key = key;
+          input.addEventListener('click', () => {
+            const options = activeCellEntries(key);
+            if (selected && selected.cells.some(({r: rr, c: cc}) => cellKey(rr, cc) === key) && options.length > 1) {
+              const other = options.find((id) => id !== selected.id);
+              if (other) selectEntry(byId.get(other), key, false);
+              else selectEntry(selected, key, false);
+            } else {
+              selectEntry(findPreferredEntry(key), key, false);
+            }
+          });
+          input.addEventListener('focus', () => {
+            activeKey = key;
+            if (!selected || !selected.cells.some(({r: rr, c: cc}) => cellKey(rr, cc) === key)) {
+              selectEntry(findPreferredEntry(key), key, false);
+            } else {
+              refreshClasses();
+            }
+          });
+          input.addEventListener('input', (event) => {
+            if (finished) return;
+            const typed = event.target.value.replace(/[^a-z]/gi, '').slice(-1).toUpperCase();
+            setCell(key, typed);
+            if (typed) {
+              beginTimer();
+              const nextKey = adjacentInEntry(key, 1);
+              if (nextKey) focusKey(nextKey);
+            }
+            checked = false;
+            updateUI(true);
+          });
+          input.addEventListener('keydown', (event) => onCellKeydown(event, key));
+          wrapper.appendChild(input);
+          inputs.set(key, input);
+        }
+        board.appendChild(wrapper);
+      }
+    }
+  }
+
+  function findPreferredEntry(key) {
+    const options = activeCellEntries(key);
+    const desired = options.find((id) => byId.get(id).dir === activeTab);
+    return byId.get(desired || options[0]);
+  }
+
+  function selectEntry(entry, cursorKey = null, scrollClue = false) {
+    if (!entry) return;
+    selected = entry;
+    activeTab = entry.dir;
+    activeKey = cursorKey || cellKey(entry.r, entry.c);
+    $('selected-label').textContent = `${entry.number} ${entry.dir.toUpperCase()}`;
+    $('selected-length').textContent = `${entry.answer.length} LETTERS`;
+    $('selected-clue').textContent = entry.clue;
+    $('word-entry').value = getEntryText(entry);
+    updateTabs();
+    renderClues(scrollClue);
+    refreshClasses();
+    updateLesson();
+    updateSelectedValidation();
+    scrollGridToCell(activeKey);
+  }
+
+  function scrollGridToCell(key) {
+    const input = inputs.get(key);
+    const box = $('grid-scroll');
+    if (!input) return;
+    const left = input.parentElement.offsetLeft;
+    const top = input.parentElement.offsetTop;
+    if (left < box.scrollLeft + 12 || left + input.offsetWidth > box.scrollLeft + box.clientWidth - 12) {
+      box.scrollLeft = Math.max(0, left - box.clientWidth / 2);
+    }
+    if (top < box.scrollTop + 10 || top + input.offsetHeight > box.scrollTop + box.clientHeight - 10) {
+      box.scrollTop = Math.max(0, top - box.clientHeight / 2);
+    }
+  }
+
+  function focusKey(key) {
+    activeKey = key;
+    const input = inputs.get(key);
+    if (input) input.focus({ preventScroll: true });
+    refreshClasses();
+    scrollGridToCell(key);
+  }
+
+  function adjacentInEntry(key, offset) {
+    if (!selected) return null;
+    const index = selected.cells.findIndex(({r, c}) => cellKey(r, c) === key);
+    if (index === -1) return null;
+    const target = selected.cells[index + offset];
+    return target ? cellKey(target.r, target.c) : null;
+  }
+
+  function onCellKeydown(event, key) {
+    if (finished) { event.preventDefault(); return; }
+    if (event.key === ' ' && activeCellEntries(key).length > 1) {
+      event.preventDefault();
+      const other = activeCellEntries(key).find((id) => id !== selected.id);
+      selectEntry(byId.get(other), key, false);
+      return;
+    }
+    if (event.key === 'Enter') { event.preventDefault(); checkAnswers(); return; }
+    if (event.key === 'Backspace') {
+      event.preventDefault();
+      const hadCharacter = Boolean(cells.get(key).value);
+      setCell(key, '');
+      if (!hadCharacter) { const previous = adjacentInEntry(key, -1); if (previous) focusKey(previous); }
+      checked = false;
+      updateUI(true);
+      return;
+    }
+    if (event.key === 'Delete') { event.preventDefault(); setCell(key, ''); checked = false; updateUI(true); return; }
+    const arrows = {
+      ArrowRight: [0, 1, 'across'], ArrowLeft: [0, -1, 'across'],
+      ArrowDown: [1, 0, 'down'], ArrowUp: [-1, 0, 'down']
+    };
+    if (arrows[event.key]) {
+      event.preventDefault();
+      const [dr, dc, direction] = arrows[event.key];
+      const available = activeCellEntries(key).find((id) => byId.get(id).dir === direction);
+      if (available && selected.dir !== direction) selectEntry(byId.get(available), key, false);
+      const [r, c] = key.split(',').map(Number);
+      const nextKey = cellKey(r + dr, c + dc);
+      if (cells.has(nextKey)) focusKey(nextKey);
+    }
+  }
+
+  function updateTabs() {
+    ['across', 'down'].forEach((dir) => {
+      const button = $(`tab-${dir}`);
+      const active = dir === activeTab;
+      button.classList.toggle('active', active);
+      button.setAttribute('aria-selected', String(active));
+      if (active) $('clues-content').setAttribute('aria-labelledby', button.id);
+    });
+  }
+
+  function renderClues(scrollToSelected = false) {
+    const list = $('clues-content');
+    list.replaceChildren();
+    const visible = entries.filter((entry) => entry.dir === activeTab).sort((a, b) => a.number - b.number);
+    visible.forEach((entry) => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'clue-btn';
+      button.classList.toggle('selected', selected?.id === entry.id);
+      button.classList.toggle('solved', isSolved(entry));
+      button.classList.toggle('wrong', isWrong(entry));
+      button.setAttribute('aria-pressed', String(selected?.id === entry.id));
+      const no = document.createElement('span');
+      no.className = 'clue-no'; no.textContent = String(entry.number).padStart(2, '0');
+      const content = document.createElement('span'); content.className = 'clue-content';
+      const question = document.createElement('span'); question.textContent = entry.clue;
+      const length = document.createElement('span'); length.className = 'clue-length'; length.textContent = `${entry.answer.length} letters`;
+      content.append(question, document.createElement('br'), length);
+      button.append(no, content);
+      if (isSolved(entry) || isWrong(entry)) {
+        const tick = document.createElement('span');
+        tick.className = 'clue-status';
+        tick.textContent = isSolved(entry) ? '✓' : '✕';
+        tick.setAttribute('aria-label', isSolved(entry) ? 'Correct word' : 'Incorrect word');
+        button.appendChild(tick);
+      }
+      button.addEventListener('click', () => { selectEntry(entry, null, false); });
+      list.appendChild(button);
+      if (scrollToSelected && selected?.id === entry.id) {
+        button.scrollIntoView({block: 'nearest'});
+      }
+    });
+  }
+
+  function setCell(key, value) {
+    cells.get(key).value = value;
+    inputs.get(key).value = value;
+  }
+
+  function refreshClasses() {
+    const selectedKeys = new Set(selected ? selected.cells.map(({r, c}) => cellKey(r, c)) : []);
+    const solvedKeys = new Set(entries.filter(isSolved).flatMap((entry) => entry.cells.map(({r, c}) => cellKey(r, c))));
+    const wrongEntries = entries.filter(isWrong);
+    const wrongKeys = new Set(wrongEntries.flatMap((entry) => entry.cells.map(({r, c}) => cellKey(r, c))));
+    for (const [key, input] of inputs) {
+      const elem = input.parentElement;
+      elem.classList.remove('flash-wrong');
+      elem.classList.toggle('part-of-selected', selectedKeys.has(key));
+      elem.classList.toggle('cursor', key === activeKey);
+      elem.classList.toggle('correct', solvedKeys.has(key));
+      elem.classList.toggle('word-wrong', wrongKeys.has(key));
+      elem.classList.toggle('incorrect', checked && Boolean(cells.get(key).value) && cells.get(key).answer !== cells.get(key).value);
+      elem.classList.toggle('hinted', hintedCells.has(key));
+      input.setAttribute('aria-invalid', String(wrongKeys.has(key) || (checked && Boolean(cells.get(key).value) && cells.get(key).answer !== cells.get(key).value)));
+    }
+    // Pulse only when a word first becomes fully filled and incorrect.
+    const newlyWrong = wrongEntries.filter((entry) => !previouslyWrong.has(entry.id));
+    for (const entry of newlyWrong) {
+      for (const {r,c} of entry.cells) inputs.get(cellKey(r,c)).parentElement.classList.add('flash-wrong');
+    }
+    previouslyWrong = new Set(wrongEntries.map((entry) => entry.id));
+  }
+
+  function updateSelectedValidation() {
+    const panel = document.querySelector('.selected-panel');
+    const status = $('selected-status');
+    const wrong = selected && isWrong(selected);
+    const correct = selected && isSolved(selected);
+    panel.classList.toggle('invalid', Boolean(wrong));
+    panel.classList.toggle('valid', Boolean(correct));
+    status.className = `answer-status ${wrong ? 'error' : correct ? 'success' : ''}`;
+    status.textContent = wrong ? '✕ Incorrect answer — this word is highlighted in red. Try again.'
+      : correct ? '✓ Correct! Security lesson unlocked below.'
+      : 'Complete the word to check it automatically.';
+    $('word-entry').setAttribute('aria-invalid', String(Boolean(wrong)));
+  }
+
+  function updateUI(announce = false) {
+    const count = entries.filter(isSolved).length;
+    $('solved-count').textContent = String(count);
+    $('score').textContent = String(Math.max(0, count * 100 - hintsUsed * 15));
+    $('progress-text').textContent = `${Math.round(count / entries.length * 100)}%`;
+    $('progress-fill').style.width = `${count / entries.length * 100}%`;
+    if (selected && document.activeElement !== $('word-entry')) $('word-entry').value = getEntryText(selected);
+    renderClues();
+    refreshClasses();
+    updateLesson();
+    updateSelectedValidation();
+    if (announce && selected) {
+      if (isWrong(selected)) setFeedback(`✕ ${selected.number} ${selected.dir}: Incorrect word — red means try again.`, 'error');
+      else if (isSolved(selected)) setFeedback(`✓ ${selected.number} ${selected.dir}: Correct! The word is green.`, 'success');
+      else setFeedback('Keep going! Your answer will be checked automatically when the word is complete.');
+    }
+    if (count === entries.length && !finished) win();
+  }
+
+  function updateLesson() {
+    const card = $('lesson');
+    if (!selected || !isSolved(selected)) { card.hidden = true; return; }
+    $('lesson-description').textContent = selected.lesson;
+    $('lesson-defense').textContent = selected.defense;
+    card.hidden = false;
+  }
+
+  function setFeedback(message, kind = '') {
+    const feedback = $('feedback');
+    feedback.textContent = message;
+    feedback.className = `feedback ${kind}`;
+  }
+
+  function beginTimer() {
+    if (startedAt !== null || finished) return;
+    startedAt = performance.now();
+    timerId = setInterval(showTime, 250);
+  }
+
+  function showTime() {
+    const millis = elapsedMillis + (startedAt === null ? 0 : performance.now() - startedAt);
+    const seconds = Math.floor(millis / 1000);
+    $('timer').textContent = `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`;
+  }
+
+  function applyWord() {
+    if (!selected || finished) return;
+    const text = $('word-entry').value.replace(/[^a-z]/gi, '').toUpperCase().slice(0, selected.answer.length);
+    selected.cells.forEach(({r, c}, i) => setCell(cellKey(r, c), text[i] || ''));
+    if (text) beginTimer();
+    checked = false;
+    updateUI(true);
+  }
+
+  function checkAnswers() {
+    if (finished) return;
+    checked = true;
+    const solved = entries.filter(isSolved).length;
+    const wrong = entries.filter(isWrong).length;
+    const remaining = entries.length - solved;
+    if (remaining === 0) { win(); return; }
+    setFeedback(`${solved} of ${entries.length} correct. ${wrong ? `${wrong} completed ${wrong === 1 ? 'word needs' : 'words need'} another look.` : 'Keep solving the remaining clues!'} Incorrect completed words are red; any remaining incorrect letters are highlighted in pink.`, wrong ? 'error' : '');
+    updateUI();
+  }
+
+  function revealLetter() {
+    if (!selected || finished) return;
+    const missingIndex = selected.cells.findIndex(({r, c}, i) => cells.get(cellKey(r, c)).value !== selected.answer[i]);
+    if (missingIndex === -1) {
+      setFeedback('This word is already correct. Choose another clue.','success'); return;
+    }
+    const {r, c} = selected.cells[missingIndex];
+    const key = cellKey(r, c);
+    setCell(key, selected.answer[missingIndex]);
+    if (!hintedCells.has(key)) { hintsUsed += 1; hintedCells.add(key); }
+    beginTimer();
+    checked = false;
+    focusKey(key);
+    updateUI();
+    setFeedback(`One letter revealed in ${selected.number} ${selected.dir}. A 15-point hint penalty was applied.`);
+  }
+
+  function win() {
+    if (finished) return;
+    finished = true;
+    clearInterval(timerId);
+    if (startedAt !== null) { elapsedMillis += performance.now() - startedAt; startedAt = null; }
+    showTime();
+    const score = Math.max(0, entries.length * 100 - hintsUsed * 15);
+    $('win-summary').textContent = `You solved all ${entries.length} words in ${$('timer').textContent}, earning ${score} points${hintsUsed ? ` with ${hintsUsed} hint${hintsUsed === 1 ? '' : 's'}` : ' without using a hint'}!`;
+    $('celebration').hidden = false;
+    $('play-again').focus();
+  }
+
+  function restart() {
+    if (!finished && [...cells.values()].some((cell) => cell.value) && !confirm('Clear all of your answers and restart the timer?')) return;
+    for (const key of cells.keys()) setCell(key, '');
+    clearInterval(timerId);
+    startedAt = null;
+    elapsedMillis = 0;
+    hintsUsed = 0;
+    hintedCells.clear();
+    checked = false;
+    finished = false;
+    $('celebration').hidden = true;
+    $('timer').textContent = '00:00';
+    previouslyWrong = new Set();
+    selectEntry(entries.find((entry) => entry.dir === 'across'), null, false);
+    updateUI();
+    setFeedback('New attempt ready. The timer starts when you enter your first letter.');
+  }
+
+  const challenges = [
+    { topic: 'SOCIAL ENGINEERING · PHISHING',
+      prompt: 'You get an urgent email saying your university account will be locked unless you click a link and enter your password. What should you do?',
+      options: ['Use the link immediately', 'Open the university website independently and report the suspicious email', 'Send the email to classmates and ask them to try the link'],
+      correct: 1, why: 'Phishing uses urgency and imitation to steal credentials. Verify using an official channel and report suspicious messages.' },
+    { topic: 'PHYSICAL SECURITY · ACCESS CONTROL',
+      prompt: 'A person without a badge follows you toward a restricted server room. What is the safest action?',
+      options: ['Hold the secure door open', 'Ignore the situation', 'Follow entry procedures and alert authorized security staff'],
+      correct: 2, why: 'Tailgating can bypass physical access controls. Follow authorization and visitor procedures.' },
+    { topic: 'SECURE ACCESS · VPNS',
+      prompt: 'You connect to public Wi-Fi using a university-approved VPN. Does that make it safe to enter a password on a fake login page?',
+      options: ['Yes, a VPN blocks every scam', 'No, VPN encryption does not prevent phishing', 'Yes, but only on a laptop'],
+      correct: 1, why: 'VPNs protect traffic between your device and a VPN endpoint but cannot prove that a website is genuine.' },
+    { topic: 'CONFIDENTIALITY · BREACHES',
+      prompt: 'You discover that confidential student files are accessible to people without permission. What should you do?',
+      options: ['Report the exposure promptly through your organization’s incident-response process', 'Download and share the files as proof', 'Ignore it because no one complained'],
+      correct: 0, why: 'Possible data breaches should be reported promptly while preserving evidence safely and limiting further exposure.' },
+    { topic: 'MALWARE · MALVERTISEMENTS',
+      prompt: 'A pop-up advertisement claims your device is infected and demands a software download. What is the safest response?',
+      options: ['Install the advertised software', 'Close the suspicious page and use trusted security tools', 'Enter personal data to unlock the page'],
+      correct: 1, why: 'Malicious advertisements exploit fear or curiosity to spread unwanted software and steal information.' }
+  ];
+  const answeredChallenges = new Map();
+
+  function renderChallenges() {
+    const root = $('challenge-questions');
+    root.replaceChildren();
+    challenges.forEach((challenge, index) => {
+      const article = document.createElement('article');
+      article.className = 'challenge-card';
+      const topic = document.createElement('div'); topic.className = 'topic'; topic.textContent = `SCENARIO ${index + 1} · ${challenge.topic}`;
+      const heading = document.createElement('h3'); heading.textContent = challenge.prompt;
+      const feedback = document.createElement('div'); feedback.className = 'challenge-feedback'; feedback.setAttribute('aria-live', 'polite');
+      const buttons = challenge.options.map((option, choice) => {
+        const btn = document.createElement('button'); btn.type = 'button'; btn.className = 'challenge-choice'; btn.textContent = `${String.fromCharCode(65 + choice)}. ${option}`;
+        btn.addEventListener('click', () => {
+          if (answeredChallenges.has(index)) return;
+          answeredChallenges.set(index, choice === challenge.correct);
+          buttons.forEach((b, i) => {
+            b.disabled = true;
+            if (i === choice) b.classList.add('chosen', choice === challenge.correct ? 'correct' : 'wrong');
+            if (choice !== challenge.correct && i === challenge.correct) b.classList.add('correct');
+          });
+          const status = document.createElement('strong'); status.textContent = choice === challenge.correct ? 'Correct decision. ' : 'Not quite. ';
+          feedback.append(status, document.createTextNode(challenge.why));
+          feedback.classList.toggle('error', choice !== challenge.correct);
+          const nCorrect = [...answeredChallenges.values()].filter(Boolean).length;
+          $('challenge-progress').textContent = `${nCorrect} / ${challenges.length} CORRECT`;
+        });
+        return btn;
+      });
+      article.append(topic, heading, ...buttons, feedback);
+      root.appendChild(article);
+    });
+  }
+
+  function init() {
+    $('across-num').textContent = entries.filter((entry) => entry.dir === 'across').length;
+    $('down-num').textContent = entries.filter((entry) => entry.dir === 'down').length;
+    $('clue-count').textContent = `${entries.length} CLUES`;
+    makeGrid();
+    renderChallenges();
+    ['across', 'down'].forEach((direction) => {
+      $(`tab-${direction}`).addEventListener('click', () => {
+        activeTab = direction;
+        const target = entries.find((entry) => entry.dir === direction && entry.number === selected?.number) || entries.find((entry) => entry.dir === direction);
+        selectEntry(target, null, false);
+      });
+    });
+    $('apply-word').addEventListener('click', applyWord);
+    $('word-entry').addEventListener('keydown', (event) => { if (event.key === 'Enter') { event.preventDefault(); applyWord(); } });
+    $('check-btn').addEventListener('click', checkAnswers);
+    $('hint-btn').addEventListener('click', revealLetter);
+    $('reset-btn').addEventListener('click', restart);
+    $('play-again').addEventListener('click', restart);
+    selectEntry(entries.find((entry) => entry.dir === 'across'), null, false);
+    updateUI();
+  }
+  init();
+})();
+
+</script>
+</body>
+</html>
